@@ -28,3 +28,6 @@ Status key: [x] done and verified · [ ] not done · [~] partly done.
 ## Not doing (yet)
 - No live-service tests in the suite. Tests stay offline and deterministic.
 - No repo-wide smell gate; scope stays on changed code.
+- [x] Local web UI: `grim_serve.py` serves the market sim, holds the key,
+  enforces dissent, and computes the aggregate server-side.
+- [ ] Decide whether the UI ships beyond localhost (needs hosting + a cost call).

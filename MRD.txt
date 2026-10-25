@@ -44,3 +44,7 @@ UPDATE 2026-10-25 — Item 2 scored: 6/6 on eval/judge_labels.json, BUT the labe
 are agent-authored and the keyword checker needed two corrections before the
 score held. Human review of eval/results/ still required before quoting it.
 Remaining human task: grow the set with subtle, not just blatant, bad claims.
+
+UPDATE 2026-10-25 — Market sim UI shipped locally (grim_serve.py + Grim page).
+Human decisions still open: hosting/distribution beyond localhost, and whether
+the "guaranteed dissent" hook is the positioning to publish under.

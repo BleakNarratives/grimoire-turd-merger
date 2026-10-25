@@ -16,3 +16,7 @@ Append-only log. Add new entries at the bottom; never rewrite earlier ones.
 - 2026-10-25 — Judge scored 6/6 on eval/judge_labels.json. Judge prompt gained
   a section for unverified artifact assertions; side prompts now fence the
   artifact (an injection had been steering the proponent). eval/ added.
+- 2026-10-25 — Grim/ market sim now actually runs outside a hosted chat: new
+  grim_serve.py (stdlib local server, key stays server-side, CSRF-guarded by
+  Origin), page rewired to /api/simulate. Dissent enforced in code with one
+  retry; aggregate recomputed server-side so a model cannot inflate it. 27 tests.

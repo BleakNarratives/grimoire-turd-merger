@@ -24,6 +24,12 @@ Stay lean. Read-only by default. Stdlib only. No network unless you pass `llm`.
 - `demo_svg.py` — renders the animated results SVG (SMIL, no JS).
 - `roadmap_map.py` — indexes every `ROADMAP*.md` into one map.
 - `ROADMAP_INDEX.md` — generated map (regen, don't hand-edit).
+- `larp_scan.py` — code-level larp detector: assertion-free tests, trivial
+  assertions, completion claims with no receipt.
+- `grim_serve.py` — local web UI server for the market sim. Holds the key,
+  proxies the model, enforces dissent, computes the aggregate itself.
+- `Grim/grim_market_sim.html` — the market sim page, served by `grim_serve.py`.
+- `eval/` — judge scoring harness plus labeled baseline (calls a provider).
 - `tests/` — deterministic unittest suite (temp dirs, no network).
 
 ## Use
@@ -36,8 +42,18 @@ python3 grimoire_safety.py llm notes.txt --image screenshot.png   # optional, se
 python3 grimoire_tui.py                                          # or: grimoire (alias)
 python3 demo_svg.py --root <project-dir> -o demo.svg             # keep --root narrow
 python3 roadmap_map.py --root <project-dir> -o ROADMAP_INDEX.md
+python3 larp_scan.py <dir> [--strict]
+python3 grim_serve.py --open        # market sim at http://127.0.0.1:8787/
+python3 eval/run_judge_eval.py      # live; --recheck re-scores saved transcripts
 python3 -m unittest discover -s tests -v
 ```
+
+### The market sim does not call a provider from the browser
+
+The page posts to `/api/simulate` on this machine. `grim_serve.py` builds the
+prompt, reads the key from the vault, and computes scores server-side. Nothing
+credential-shaped reaches the browser, so the page runs on any machine with
+Python instead of only inside a hosted chat product.
 
 Point `--root` at a project folder. A home-directory root walks far too much.
 
