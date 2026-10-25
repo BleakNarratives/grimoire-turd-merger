@@ -1,0 +1,160 @@
+# ROADMAP INDEX — auto-map (turd-merger-tools/roadmap_map.py)
+# root: /home/bleaknarratives | files: 64
+# Regen: python3 turd-merger-tools/roadmap_map.py --root . -o turd-merger-tools/ROADMAP_INDEX.md
+
+## Totals: 292/573 checkboxes done across 64 roadmap files
+
+## Map (where to look first)
+- `._archive/buffface_scrap_20260904/Buff-Face/ROADMAP.md` — ROADMAP.md — Buff-Face TUI [no-boxes]
+- `._archive/buffface_scrap_20260904/buffface-tauri/ROADMAP.md` — ROADMAP.md — Buff-Face Desktop (Tauri) [no-boxes]
+- `._archive/duplicates/modmind-shell/ROADMAP.md` — Roadmap: The Post-Boardroom Era [0/4]
+- `._archive/nest_flatten_20260907/lough_system_nest/ROADMAP.md` — Lough System Roadmap [no-boxes]
+  - - Phase 1 hardening started: API access policy, event envelope, migration ledger, export tool, and unit tests.
+  - - Phase 2 started: client onboarding endpoints and CSV ingest adapter.
+  - ## Phase 1 - Hardening
+- `._archive/root_loose_20260930/ROADMAP.md` — Qwentag Roadmap [3/8]
+  - ## Phase 1: Stability (Current)
+  - ## Phase 2: Orchestration (Pending)
+  - ## Phase 3: Skill Maturity (Future)
+- `._archive/root_loose_20260930/ROADMAPCODX.md` — ROADMAPCODX.md – Whorl Scout‑Headed Skills & Oracle Engine [no-boxes]
+  - ### Phase 0 – Foundations (0‑3 mo)
+  - ### Phase 1 – Polyglot Runtime (3‑6 mo)
+  - ### Phase 2 – Monetization Layer (6‑9 mo)
+- `.config/nvm/ROADMAP.md` — nvm Road Map [1/4]
+- `ClawTeam/ROADMAP.md` — ClawTeam Evolution Roadmap [no-boxes]
+  - ## Phase 1: Transport 抽象层 (v0.3)
+  - Phase 1:
+  - ## Phase 2: Redis Transport (v0.4)
+- `Code-City-Apocalypse/ROADMAP.md` — ROADMAP — Crash Feeder Agent [0/3]
+- `Code-City-Apocalypse/ROADMAP_BEATMAKER.md` — ROADMAP: Riffusion-Meta-Graph Hive-Powered Beat Engine [0/7]
+  - ## Phase 1: Persistence Layer Setup (Immediate)
+  - ## Phase 2: Synthesis Integration (Post-Persistence)
+- `ConstraintOps/ROADMAP.md` — ROADMAP — ConstraintOps [7/30]
+  - ## Phase 0 — Instrument hardening (this week)
+  - ## Phase 1 — First money (week 1–2) — **CURRENT PHASE**
+  - ## Phase 2 — Public proof (week 2–3)
+- `GRAVEYARD/20260913_OutcLaw_stale_from_The-Werkz/OutClaw_Main/ROADMAP.md` — OutClaw Roadmap [18/18]
+- `MouthTape/ROADMAP.md` — ROADMAP — MOUTH TAPE [4/9]
+- `New-Heights/universal-mcp-core/ROADMAP.md` — ROADMAP.md — Universal MCP Substrate [no-boxes]
+  - [x] EXECUTIVE_RESOLUTION.md — Phase 1 motion; BOARD VERDICT delivered:
+- `OpenHeads/bootstrap/dist/bleak-higgins/ROADMAP.md` — ROADMAP — bleak-higgins [0/7]
+- `OpenHeads/bootstrap/dist/bleak-outclaw/ROADMAP.md` — ROADMAP — bleak-outclaw [0/6]
+- `OpenHeads/bootstrap/dist/bleak-tools/ROADMAP.md` — ROADMAP — bleak-tools [0/4]
+- `OpenHeads/bootstrap/dist/bleak-ui-kit/ROADMAP.md` — ROADMAP — bleak-ui-kit [0/5]
+- `OpenHeads/bootstrap/dist/bleak-verification/ROADMAP.md` — ROADMAP — bleak-verification [0/6]
+- `OpenHeads/bootstrap/dist/bleak-vertical-ai/ROADMAP.md` — ROADMAP — bleak-vertical-ai [0/5]
+- `OpenHeads/bootstrap/dist/bleak-whorl/ROADMAP.md` — ROADMAP — bleak-whorl [0/6]
+- `OpenHeads/bootstrap/templates/ROADMAP.md` — ROADMAP — {{REPO}} [no-boxes]
+- `OpenHeads/convergence-starter-pack/ROADMAP.md` — ROADMAP — convergence-starter-pack [no-boxes]
+- `OutClaw/OutClaw_Main/ROADMAP.md` — OutClaw Roadmap [18/18]
+- `RootBase/ROADMAP.md` — ROADMAP.md — ShipWreckD OS Builder [24/38]
+- `RootBase/income_engine/ROADMAP.md` — Income Engine - ROADMAP [0/56]
+  - ## 📋 Phase 1: Foundation (Current - High Priority)
+  - ## 📋 Phase 2: Pipeline Enhancement
+  - ## 📋 Phase 3: Production Ready
+- `RootBase/lough_system/ROADMAP.md` — Lough System Roadmap [3/9]
+  - ## Phase 2: The Truth Engine (v0.2)
+  - ## Phase 3: The ModMind Ledger (v0.3)
+- `RootBase/lough_system/ROADMAP2.md` — Lough System Roadmap [no-boxes]
+  - - Phase 1 hardening started: API access policy, event envelope, migration ledger, export tool, and unit tests.
+  - - Phase 2 started: client onboarding endpoints and CSV ingest adapter.
+  - ## Phase 1 - Hardening
+- `RootBase_recovery/project_bundle_20260513_120226/Artificial-Criminal/docs/ROADMAP.md` — Roadmap [no-boxes]
+  - ## Phase 0 - Foundation
+  - ## Phase 1 - Datacampus Contract
+  - ## Phase 2 - Lab Runtime
+- `RootBase_recovery/project_bundle_20260513_120226/lough_system/ROADMAP.md` — Lough System Roadmap [no-boxes]
+  - - Phase 1 hardening started: API access policy, event envelope, migration ledger, export tool, and unit tests.
+  - - Phase 2 started: client onboarding endpoints and CSV ingest adapter.
+  - ## Phase 1 - Hardening
+- `SyntaxIntelligence/ROADMAP.md` — 🗺️ Project Syntax — ROADMAP [40/55]
+  - ## ✅ Phase 1 — Hardened Swarm Engine (COMPLETE)
+  - ## 🔧 Phase 2 — Integration & Hardening (IN PROGRESS)
+  - ## 🚀 Phase 3 — Autonomous Behaviors (NEXT)
+- `SyntaxIntelligence/agents/OutClaw_Main/ROADMAP.md` — OutClaw Roadmap [18/18]
+- `SyntaxIntelligence/agents/ROADMAP.md` — ClawTeam Evolution Roadmap [no-boxes]
+  - ## Phase 1: Transport 抽象层 (v0.3)
+  - Phase 1:
+  - ## Phase 2: Redis Transport (v0.4)
+- `SyntaxIntelligence/boardroom/ROADMAP.md` — ROADMAP.md — Vertical AI Boardroom [no-boxes]
+- `SyntaxIntelligence/constraint_ops/ROADMAP.md` — ROADMAP — ConstraintOps [7/30]
+  - ## Phase 0 — Instrument hardening (this week)
+  - ## Phase 1 — First money (week 1–2) — **CURRENT PHASE**
+  - ## Phase 2 — Public proof (week 2–3)
+- `SyntaxIntelligence/docs/ROADMAP.md` — ROADMAP — MikeySwarm Ecosystem [no-boxes]
+  - ## P0 — REVENUE / LIVE RAILS
+  - ## P1 — RESEARCH / PUBLICATION
+  - - P0 #1 DVM: DONE except nostr.band decision — end-to-end serve PROVEN via
+- `The-Werkz/Official-Vertical-AI-Boardroom/ROADMAP.md` — ROADMAP.md — Vertical AI Boardroom [no-boxes]
+- `The-Werkz/OutcLaw/OutClaw_Main/ROADMAP.md` — OutClaw Roadmap [18/18]
+- `Tribunal/ROADMAP.md` — Roadmap [no-boxes]
+  - ## Phase 1 — Sidecar wrapper (build first)
+  - ## Phase 2 — Same-prompt comparison harness
+  - - Run each target CLI against the same prompt via the Phase 1 wrapper
+- `a9-codex-grapher/ROADMAP.md` — A9 Codex Grapher — Architecture Roadmap [no-boxes]
+- `berd-vai-askhole-merger/docs/ROADMAP.md` — Roadmap [8/9]
+  - ## Phase 0 — Local outreach review control room (current)
+  - ## Phase 1 — Review loop
+  - ## Phase 2 — Optional local model
+- `bleak-higgins-staging/live-wrappers/ROADMAP.md` — ROADMAP — live-wrappers [0/4]
+- `bleak-higgins-staging/scouts-lab/ROADMAP.md` — ROADMAP — scouts-lab [0/4]
+- `bleak-whorl-staging/SyntaxIntelligence/ROADMAP.md` — 🗺️ Project Syntax — ROADMAP [40/55]
+  - ## ✅ Phase 1 — Hardened Swarm Engine (COMPLETE)
+  - ## 🔧 Phase 2 — Integration & Hardening (IN PROGRESS)
+  - ## 🚀 Phase 3 — Autonomous Behaviors (NEXT)
+- `bleak-whorl-staging/core_framework/ROADMAP.md` — Freebuff Agent Handoff & Asymmetric Intel Roadmap [no-boxes]
+- `buffface-saga-partition/Buff-Face/ROADMAP.md` — ROADMAP.md — Buff-Face TUI [no-boxes]
+- `buffface-saga-partition/Official-Vertical-AI-Boardroom/ROADMAP.md` — ROADMAP.md — Vertical AI Boardroom [no-boxes]
+- `buffface-saga-partition/buffface-tauri/ROADMAP.md` — ROADMAP.md — Buff-Face Desktop (Tauri) [no-boxes]
+- `core_framework/ROADMAP.md` — Core Framework Roadmap & Handoff [no-boxes]
+- `core_framework_SAFE_BACKUP/ROADMAP.md` — Freebuff Agent Handoff & Asymmetric Intel Roadmap [no-boxes]
+- `iWarship/.dev-cockpit/workspaces/dc-20260903-223858-dfc9837f/ROADMAP.md` — iWarship Roadmap [16/19]
+  - - Phase 1: Project Scaffolding
+  - - Phase 2: Cockpit TUI HUD (Layout + Input)
+  - - Phase 3: Bridge Engine (Headless wrapper) & Fleet Scaffolding
+- `iWarship/ROADMAP.md` — iWarship Roadmap [19/24]
+  - - Phase 1: Project Scaffolding
+  - - Phase 2: Cockpit TUI HUD (Layout + Input)
+  - - Phase 3: Bridge Engine (Headless wrapper) & Fleet Scaffolding
+- `mrs-higgins-integration/ROADMAP.md` — Mrs. Higgins Integration — Autonomous Roadmap [3/9]
+  - ## Phase 1: 10x → 100x (Resilience & Distributed Execution) — [COMPLETED / IN PROGRESS]
+  - ## Phase 2: 100x → 1000x (Autonomous Economic Autopoiesis) — [PLANNED]
+- `p_recovery/projects/pytch/ROADMAP.md` — ROADMAP.md [no-boxes]
+- `p_recovery/propagated_node/swarm_node/ROADMAP.md` — Thoth Orchestrator Roadmap [3/9]
+  - ## Phase 2: The Autonomous Lead (v0.2)
+  - ## Phase 3: Recursive Intelligence (v0.3)
+- `payment_system/ROADMAP.md` — ROADMAP — Payment System Agent [0/3]
+- `propagated_node/swarm_node/ROADMAP.md` — Thoth Orchestrator Roadmap [3/9]
+  - ## Phase 2: The Autonomous Lead (v0.2)
+  - ## Phase 3: Recursive Intelligence (v0.3)
+- `scout-recovery/ROADMAP.md` — Freebuff Agent Handoff & Asymmetric Intel Roadmap [no-boxes]
+- `thoth_orchestrator/ROADMAP.md` — Thoth Orchestrator Roadmap [3/9]
+  - ## Phase 2: The Autonomous Lead (v0.2)
+  - ## Phase 3: Recursive Intelligence (v0.3)
+- `tools/ROADMAP.md` — ROADMAP — Worktree (src + tools) [9/15]
+  - ## P0 — Rescue (A9 imminent loss)
+  - - [x] 2026-09-11 — `tools/rescue/a9_rescue.sh` P0 kit: ADB+MTP+termux-tar fallback, 4 zones, SHA-256 manifests
+  - - Verdict: PRIOR INTAKE WAS PARTIAL — rescue required (P0) — 446 A9-unique suffixes missing on Chromebook
+- `turd-merger-tools/ROADMAP_INDEX.md` — ROADMAP INDEX — auto-map (turd-merger-tools/roadmap_map.py) [2/2]
+  - - - Phase 1 hardening started: API access policy, event envelope, migration ledger, export tool, and unit tests.
+  - - - Phase 2 started: client onboarding endpoints and CSV ingest adapter.
+  - - ## Phase 1 - Hardening
+- `vertical_local/ROADMAP.md` — ROADMAP — Vertical Local [0/3]
+- `vigil/artificial_criminal/docs/ROADMAP.md` — Roadmap [no-boxes]
+  - ## Phase 0 - Foundation
+  - ## Phase 1 - Datacampus Contract
+  - ## Phase 2 - Lab Runtime
+- `~/ROADMAP.md` — ROADMAP.md — MikeySwarm Ecosystem [25/35]
+
+## Next smallest actions (from P0/Phase signals)
+- [._archive/nest_flatten_20260907/lough_system_nest/ROADMAP.md] - Phase 1 hardening started: API access policy, event envelope, migration ledger, export tool, and unit tests.
+- [._archive/nest_flatten_20260907/lough_system_nest/ROADMAP.md] - Phase 2 started: client onboarding endpoints and CSV ingest adapter.
+- [._archive/nest_flatten_20260907/lough_system_nest/ROADMAP.md] ## Phase 1 - Hardening
+- [._archive/nest_flatten_20260907/lough_system_nest/ROADMAP.md] ## Phase 2 - Domain Adapters
+- [._archive/nest_flatten_20260907/lough_system_nest/ROADMAP.md] ## Phase 3 - Analyst Quality
+- [._archive/root_loose_20260930/ROADMAP.md] ## Phase 1: Stability (Current)
+- [._archive/root_loose_20260930/ROADMAP.md] ## Phase 2: Orchestration (Pending)
+- [._archive/root_loose_20260930/ROADMAP.md] ## Phase 3: Skill Maturity (Future)
+- [._archive/root_loose_20260930/ROADMAPCODX.md] ### Phase 0 – Foundations (0‑3 mo)
+- [._archive/root_loose_20260930/ROADMAPCODX.md] ### Phase 1 – Polyglot Runtime (3‑6 mo)
+

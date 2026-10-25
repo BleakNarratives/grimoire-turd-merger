@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="330" viewBox="0 0 760 330" font-family="monospace">
+<rect width="100%" height="100%" rx="14" fill="#0b0f1a"/>
+<text x="24" y="40" fill="#7c5cff" font-size="20" font-weight="bold">GRIMOIRE · TURD MERGER</text>
+<text x="24" y="62" fill="#e6edf7" font-size="12">4 bus entries graded · 1 flagged · 1/1 roadmap checkboxes done</text>
+<rect x="24" y="80" width="700" height="10" rx="5" fill="#1b2336"/>
+<rect x="24" y="80" width="0" height="10" rx="5" fill="#ff5c7a"><animate attributeName="width" from="0" to="175.0" dur="1.2s" fill="freeze"/></rect>
+<g opacity="0">
+<animate attributeName="opacity" from="0" to="1" begin="0.20s" dur="0.4s" fill="freeze"/>
+<circle cx="34" cy="115" r="6" fill="#3ddc97"/>
+<text x="50" y="120" fill="#e6edf7" font-size="13"><tspan fill="#3ddc97" font-weight="bold">OK  </tspan>  1.0  SPARK_FLAG_test_gemini_001_1787448679.bus</text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" from="0" to="1" begin="0.35s" dur="0.4s" fill="freeze"/>
+<circle cx="34" cy="145" r="6" fill="#3ddc97"/>
+<text x="50" y="150" fill="#e6edf7" font-size="13"><tspan fill="#3ddc97" font-weight="bold">OK  </tspan>  1.0  SPARK_FLAG_test_gemini_001_1787474236.bus</text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" from="0" to="1" begin="0.50s" dur="0.4s" fill="freeze"/>
+<circle cx="34" cy="175" r="6" fill="#3ddc97"/>
+<text x="50" y="180" fill="#e6edf7" font-size="13"><tspan fill="#3ddc97" font-weight="bold">OK  </tspan>  1.0  scout_1787448601.bus</text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" from="0" to="1" begin="0.65s" dur="0.4s" fill="freeze"/>
+<circle cx="34" cy="205" r="6" fill="#ff5c7a"/>
+<text x="50" y="210" fill="#e6edf7" font-size="13"><tspan fill="#ff5c7a" font-weight="bold">FLAG</tspan>  0.0  test_gemini_001.bus</text>
+</g>
+<text x="24" y="314" fill="#7a8699" font-size="11">read-only · stdlib · claim without receipt = flag, not proof</text>
+</svg>

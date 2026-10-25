@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" font-family="monospace">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7c5cff"/>
+      <stop offset="1" stop-color="#3ddc97"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="220" rx="18" fill="#0b0f1a"/>
+  <rect x="24" y="24" width="852" height="172" rx="12" fill="none" stroke="#1b2336" stroke-width="2"/>
+  <text x="50" y="96" fill="url(#g)" font-size="46" font-weight="bold">GRIMOIRE</text>
+  <text x="52" y="128" fill="#e6edf7" font-size="18">turd merger · safety bus · read-only</text>
+  <g fill="#e6edf7" font-size="13">
+    <text x="52" y="168">
+      <tspan fill="#3ddc97">OK</tspan> <tspan fill="#f5c542">WARN</tspan> <tspan fill="#ff5c7a">FLAG</tspan>
+      &#160;&#160;claim without receipt is a flag, not proof
+    </text>
+  </g>
+  <rect x="50" y="186" width="0" height="3" rx="1.5" fill="url(#g)">
+    <animate attributeName="width" from="0" to="800" dur="2.4s" repeatCount="indefinite"/>
+  </rect>
+  <circle cx="820" cy="70" r="6" fill="#3ddc97">
+    <animate attributeName="opacity" values="1;0.2;1" dur="1.6s" repeatCount="indefinite"/>
+  </circle>
+</svg>
