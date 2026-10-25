@@ -1,0 +1,37 @@
+MRD — Human-Reliant Tasks and Hang-Ups (turd-merger-tools)
+==========================================================
+
+Things only Bleak can do or decide. Agents must not guess these.
+
+OPEN
+----
+1. Hugging Face token. go_poof.txt (in the home dir, not this repo) holds a
+   live HF token in plain text. Our rule says keys live in vault.json only.
+   Decision needed: move it to vault.json and delete the file? (yes/no)
+   Status: waiting on user.
+
+2. Judge calibration. The debate judge has not been scored against a labeled
+   known-good / known-bad set. Needs artifacts chosen by a human, since an
+   agent picking its own test cases would grade its own homework.
+   Status: blocked on user supplying or approving the labeled examples.
+
+3. Target merger. Unclear which repo the wider tooling folds into. Current
+   recommendation is turd-merger-tools; the canon-zone design in
+   vertical_local/runs/thesis.txt has no implementation found yet.
+   Status: waiting on user.
+
+4. Pliability decision. Whether the judge should accept user-tunable
+   weights, rubrics, or a config file. This is a product choice, not a
+   technical one.
+   Status: waiting on user.
+
+5. Publishing path. The tools have no UI or packaged app. Choosing a
+   delivery surface (web, desktop, CLI-only) is a human decision and has
+   cost implications.
+   Status: open, no agent action until decided.
+
+CLOSED
+------
+- Judge prompt injection fence added (261c31d). Verified by tests and one
+  live run; still needs the calibration in item 2 before it's trusted.
+- Code-level larp scanner added (e58bd52). Verified by tests and a scan.
