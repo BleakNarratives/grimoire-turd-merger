@@ -48,3 +48,16 @@ working tree and the tests before changing anything.
 - Keys live in `~/.concierge/vault.json`. Never print them.
 - The Groq and Gemini paths need network. Tests must stay offline.
 - Judge prompt injection resistance is probabilistic. Keep the caveat.
+
+## ASK view (2026-10-25)
+
+The console talks to `grim_serve` on `127.0.0.1:8787/api/ask` and imports
+nothing from the engine. `ask_engine()` never raises: every failure returns a
+full contract with `model_used="offline"` and a `routing_reason` naming the
+failure, so the view renders a labelled floor instead of an error screen.
+
+`CONTRACT_FIELDS` is duplicated here on purpose and a test asserts the two
+copies agree. If they ever drift, the client refuses the response
+(`engine answered outside the contract`) rather than showing half of it.
+
+Tests: `tests/test_grim_contract.py` in the home repo, not here.
