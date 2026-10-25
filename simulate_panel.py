@@ -185,7 +185,7 @@ def main(argv=None) -> int:
     def ask(prompt: str) -> str:
         if a.provider == "groq":
             return gs.groq_text(prompt, a.model or "openai/gpt-oss-120b")
-        return gs.gemini_text(prompt, a.model or "gemini-3.1-flash-lite")
+        return gs.gemini_text(prompt, a.model or "gemini-flash-lite-latest")
 
     try:
         if a.mode == "debate":

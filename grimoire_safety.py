@@ -252,7 +252,7 @@ def _gemini_key() -> str:
         return ""
 
 
-def gemini_text(prompt: str, model: str = "gemini-3.1-flash-lite") -> str:
+def gemini_text(prompt: str, model: str = "gemini-flash-lite-latest") -> str:
     """One text-only Gemini call. Raises RuntimeError on any failure; never echoes the key."""
     import urllib.request
     import urllib.error

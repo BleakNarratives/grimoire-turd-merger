@@ -48,3 +48,5 @@ Remaining human task: grow the set with subtle, not just blatant, bad claims.
 UPDATE 2026-10-25 — Market sim UI shipped locally (grim_serve.py + Grim page).
 Human decisions still open: hosting/distribution beyond localhost, and whether
 the "guaranteed dissent" hook is the positioning to publish under.
+UPDATE 2026-10-25 — Market sim moved to ~/grim-oracle. Remaining human task
+in THAT repo (see its MRD.txt): hosting/distribution and positioning.

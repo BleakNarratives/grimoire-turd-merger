@@ -20,3 +20,8 @@ Append-only log. Add new entries at the bottom; never rewrite earlier ones.
   grim_serve.py (stdlib local server, key stays server-side, CSRF-guarded by
   Origin), page rewired to /api/simulate. Dissent enforced in code with one
   retry; aggregate recomputed server-side so a model cannot inflate it. 27 tests.
+- 2026-10-25 — Extracted the market sim (`grim_serve.py`, `Grim/`,
+  `tests/test_grim_serve.py`) to `~/grim-oracle`. It had its own server, page,
+  and invariants; keeping a second copy here would have drifted. Also fixed the
+  Gemini default: `gemini-3.1-flash-lite` returns 503, `gemini-flash-lite-latest`
+  works.
