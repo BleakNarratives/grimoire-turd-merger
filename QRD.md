@@ -61,3 +61,16 @@ copies agree. If they ever drift, the client refuses the response
 (`engine answered outside the contract`) rather than showing half of it.
 
 Tests: `tests/test_grim_contract.py` in the home repo, not here.
+
+## BLOCKERS view (2026-10-25)
+
+Reads `RootBase/logs/shared/bin_tools/events.tsv` (written by
+`bin/telemetry.py`) and groups it by tool: a tool with **2+ non-zero exit
+codes** is a blocker, one failure is a bad day. The detail line comes from the
+most recent failure, so the row explains itself instead of only counting.
+
+Read-only: opening the view writes no event, so it never changes the numbers it
+reports. Two states are deliberately distinct and worded differently — an
+**empty log** says "unmeasured, not healthy", while a populated log with no
+repeat failures says "no blockers". `find_blockers()` and `load_events()` are
+plain functions; `tests/test_blockers.py` tests them without a terminal.

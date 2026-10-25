@@ -30,7 +30,54 @@ import roadmap_map as rm      # noqa: E402
 
 BUS_DIR = Path.home() / ".grimoire" / "bus"
 ROOT = Path.cwd()
-VIEWS = ("BUS", "ROADMAP", "ASK", "ABOUT")
+VIEWS = ("BUS", "ROADMAP", "BLOCKERS", "ASK", "ABOUT")
+
+# Written by bin/telemetry.py. Columns: stamp, tool, rc, dur_s, bus_available,
+# detail. Read-only here: this view never writes an event, so opening the TUI
+# does not change the numbers it is reporting.
+EVENTS_LOG = Path.home() / "RootBase" / "logs" / "shared" / "bin_tools" / "events.tsv"
+BLOCKER_MIN_FAILURES = 2
+
+
+def load_events(path: Path | None = None) -> list[dict]:
+    """Telemetry rows, newest last. A malformed row is skipped, not fatal."""
+    p = Path(path) if path else EVENTS_LOG
+    try:
+        raw = p.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    rows = []
+    for line in raw:
+        parts = line.split("\t")
+        if len(parts) < 5:
+            continue
+        rows.append({"stamp": parts[0], "tool": parts[1], "rc": parts[2],
+                     "dur": parts[3], "bus": parts[4],
+                     "detail": parts[5] if len(parts) > 5 else ""})
+    return rows
+
+
+def find_blockers(events: list[dict], min_failures: int = BLOCKER_MIN_FAILURES) -> list[dict]:
+    """Tools that failed repeatedly. One failure is a bad day; several is a blocker.
+
+    Grouping is by tool name, and a failure is any rc that is not 0 or empty.
+    The returned detail comes from the most recent failure, so the row explains
+    itself instead of only counting.
+    """
+    by_tool: dict[str, dict] = {}
+    for ev in events:
+        tool = ev.get("tool") or "?"
+        row = by_tool.setdefault(tool, {"tool": tool, "runs": 0, "failures": 0,
+                                        "last_rc": "0", "last": "", "detail": ""})
+        row["runs"] += 1
+        row["last"] = ev.get("stamp", "")
+        rc = (ev.get("rc") or "").strip()
+        row["last_rc"] = rc or "0"
+        if rc not in ("", "0"):
+            row["failures"] += 1
+            row["detail"] = (ev.get("detail") or "").strip()
+    blockers = [r for r in by_tool.values() if r["failures"] >= min_failures]
+    return sorted(blockers, key=lambda r: (-r["failures"], r["tool"]))
 
 # Mirrored from grim_serve on purpose. If the two ever disagree, this client
 # refuses to render the answer rather than showing a half-contract.
@@ -130,6 +177,12 @@ def format_status_line(view_name: str, data_list: list[dict], sel: int) -> str:
             return "ROADMAP: 0 maps"
         pct = f"{int(s['done'] / s['total'] * 100)}%" if s["total"] > 0 else "0%"
         return f"ROADMAP: {n} maps ({s['done']}/{s['total']} tasks · {pct}) · {sel_str}"
+    elif view_name == "BLOCKERS":
+        blockers = find_blockers(data_list)
+        if not blockers:
+            return f"BLOCKERS: 0 repeated failures in {len(data_list)} event(s)"
+        return (f"BLOCKERS: {len(blockers)} tool(s) failing {BLOCKER_MIN_FAILURES}+"
+                f" times · {sel_str}")
     elif view_name == "ASK":
         return "ASK: local engine at 127.0.0.1" + (
             "  - offline floor" if (data_list or [{}])[0].get("result", {}).get(
@@ -362,6 +415,51 @@ def draw_roadmap(win, items: list[dict], sel: int, top: int, layout: dict) -> No
             safe_add(win, det_y + 1 + j, 2, s, curses.color_pair(C_DIM))
 
 
+def blocker_row(b: dict) -> tuple[str, int]:
+    attr = C_FLAG if b.get("failures", 0) >= 3 else C_WARN
+    return (f"{b['failures']:>3} fail  rc={b.get('last_rc', '?'):<4} "
+            f"{b.get('tool', '?')}", attr)
+
+
+def draw_blockers(win, events: list[dict], sel: int, top: int, layout: dict) -> None:
+    h, w = win.getmaxyx()
+    blockers = find_blockers(events)
+    list_y, list_h = layout["list_y"], layout["list_h"]
+    if not blockers:
+        lines = (["── No blockers ──",
+                  f"No tool failed {BLOCKER_MIN_FAILURES}+ times in the log.",
+                  f"source: {EVENTS_LOG}",
+                  "Press r to reload after running something."]
+                 if events else
+                 ["── No telemetry yet ──",
+                  f"{EVENTS_LOG} does not exist or is empty.",
+                  "Run any instrumented bin/ tool, or bin/toolrun <cmd>.",
+                  "Absence here means unmeasured, not healthy."])
+        for i, line in enumerate(lines[:list_h]):
+            attr = curses.color_pair(C_TITLE) | curses.A_BOLD if i == 0 else curses.color_pair(C_DIM)
+            safe_add(win, list_y + i, 2, line, attr)
+        return
+
+    for i in range(list_h):
+        idx = top + i
+        if idx >= len(blockers):
+            break
+        text, attr = blocker_row(blockers[idx])
+        line = f"  {text}"
+        if idx == sel:
+            safe_add(win, list_y + i, 0, line.ljust(w - 1), curses.color_pair(C_SEL) | curses.A_BOLD)
+        else:
+            safe_add(win, list_y + i, 0, line, curses.color_pair(attr))
+
+    det_y, det_h = layout["detail_y"], layout["detail_h"]
+    if 0 <= sel < len(blockers) and det_y >= 0 and det_h > 0:
+        b = blockers[sel]
+        safe_add(win, det_y, 2, f"{b['failures']}/{b['runs']} runs failed · last {b['last']}",
+                 curses.color_pair(C_ACCENT))
+        if b.get("detail"):
+            safe_add(win, det_y + 1, 2, b["detail"], curses.color_pair(C_DIM))
+
+
 def draw_ask(win, state: dict, layout: dict) -> None:
     """Prompt, who answered, why, and the text -- in that order.
 
@@ -444,9 +542,10 @@ def main_loop(stdscr) -> None:
     init_colors()
     stdscr.keypad(True)
     view = 0
-    sel = {"BUS": 0, "ROADMAP": 0}
-    top = {"BUS": 0, "ROADMAP": 0}
-    data = {"BUS": load_bus(), "ROADMAP": load_roadmaps()}
+    sel = {"BUS": 0, "ROADMAP": 0, "BLOCKERS": 0}
+    top = {"BUS": 0, "ROADMAP": 0, "BLOCKERS": 0}
+    data = {"BUS": load_bus(), "ROADMAP": load_roadmaps(),
+            "BLOCKERS": load_events()}
     ask_state: dict = {"prompt": "", "result": None}
     msg = ""
     while True:
@@ -457,6 +556,8 @@ def main_loop(stdscr) -> None:
         name = VIEWS[view]
         if name in ("BUS", "ROADMAP"):
             draw_status_bar(stdscr, name, data[name], sel[name], layout)
+        elif name == "BLOCKERS":
+            draw_status_bar(stdscr, name, data["BLOCKERS"], sel["BLOCKERS"], layout)
         elif name == "ASK":
             draw_status_bar(stdscr, name, [ask_state], 0, layout)
         else:
@@ -466,6 +567,8 @@ def main_loop(stdscr) -> None:
             draw_bus(stdscr, data["BUS"], sel["BUS"], top["BUS"], layout)
         elif name == "ROADMAP":
             draw_roadmap(stdscr, data["ROADMAP"], sel["ROADMAP"], top["ROADMAP"], layout)
+        elif name == "BLOCKERS":
+            draw_blockers(stdscr, data["BLOCKERS"], sel["BLOCKERS"], top["BLOCKERS"], layout)
         elif name == "ASK":
             draw_ask(stdscr, ask_state, layout)
         else:
@@ -479,7 +582,8 @@ def main_loop(stdscr) -> None:
         if key == 9:  # Tab
             view = (view + 1) % len(VIEWS)
         elif key == ord("r"):
-            data = {"BUS": load_bus(), "ROADMAP": load_roadmaps()}
+            data = {"BUS": load_bus(), "ROADMAP": load_roadmaps(),
+                    "BLOCKERS": load_events()}
             msg = "reloaded"
         elif name == "ASK" and key == ord("i"):
             ask_state["prompt"] = prompt_for_text(stdscr, ask_state["prompt"])
