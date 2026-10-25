@@ -252,6 +252,73 @@ def _gemini_key() -> str:
         return ""
 
 
+def gemini_text(prompt: str, model: str = "gemini-3.1-flash-lite") -> str:
+    """One text-only Gemini call. Raises RuntimeError on any failure; never echoes the key."""
+    import urllib.request
+    import urllib.error
+    key = _gemini_key()
+    if not key:
+        raise RuntimeError("no gemini key in env or vault; nothing sent")
+    body = json.dumps({"contents": [{"parts": [{"text": prompt[:15000]}]}]}).encode()
+    req = urllib.request.Request(GEMINI_URL.format(model=model), data=body,
+                                 headers={"Content-Type": "application/json",
+                                          "x-goog-api-key": key})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"HTTP {e.code} from model endpoint ({model})") from None
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        raise RuntimeError(f"request failed: {type(e).__name__}") from None
+    try:
+        return data["candidates"][0]["content"]["parts"][0]["text"]
+    except (KeyError, IndexError, TypeError):
+        raise RuntimeError("no text in model response") from None
+
+
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+
+def _groq_key() -> str:
+    """First key from the vault pool (comma-separated). Never printed."""
+    import os
+    if os.environ.get("GROQ_API_KEY"):
+        return os.environ["GROQ_API_KEY"].split(",")[0]
+    try:
+        blob = json.loads(VAULT.read_text(encoding="utf-8"))
+        entry = (blob.get("keys") or {}).get("groq")
+        if not isinstance(entry, dict) or entry.get("status") in ("dead", "revoked"):
+            return ""
+        return (entry.get("key") or "").split(",")[0]
+    except (OSError, json.JSONDecodeError):
+        return ""
+
+
+def groq_text(prompt: str, model: str = "openai/gpt-oss-120b") -> str:
+    """One text-only Groq chat call. Raises RuntimeError on failure; never echoes the key."""
+    import urllib.request
+    import urllib.error
+    key = _groq_key()
+    if not key:
+        raise RuntimeError("no groq key in env or vault; nothing sent")
+    body = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt[:15000]}]}).encode()
+    req = urllib.request.Request(GROQ_URL, data=body,
+                                 headers={"Content-Type": "application/json",
+                                          "Authorization": f"Bearer {key}",
+                                          "User-Agent": "grimoire-safety/0.1"})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"HTTP {e.code} from groq ({model})") from None
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        raise RuntimeError(f"request failed: {type(e).__name__}") from None
+    try:
+        return data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        raise RuntimeError("no text in groq response") from None
+
+
 def cmd_llm(args) -> int:
     """Optional multimodal review. Off unless invoked. Text is redacted first;
     an image (screenshot) is sent only if it contains no detectable secret text."""
