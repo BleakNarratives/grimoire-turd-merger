@@ -1,0 +1,43 @@
+SIMULATED — model reaction, not a measured human response.
+
+== PROPONENT ==
+The artifact proposes a hash‑based cache but provides no empirical evidence that the cache actually improves the system. By admitting that hit‑rate is unmeasured, it leaves a critical performance metric undefined; without this data the cache could be a no‑op or even a regression if most lookups miss. Relying on existing tests for correctness is insufficient because those tests likely exercised the original code path, not the new caching layer. They may not cover edge cases such as hash collisions, stale entries, or the interaction between cache invalidation and concurrent file modifications. Moreover, the claim that “speed is not claimed” does not absolve the need for performance validation—any added storage or lookup overhead could degrade latency, especially for low‑hit scenarios. To make the central claim robust, the artifact would need:
+
+1. Quantitative hit‑rate statistics across representative workloads.
+2. Benchmarks comparing end‑to‑end latency and throughput with and without the cache.
+3. Tests specifically targeting cache correctness (collision handling, eviction policy, consistency under concurrent updates).
+4. Analysis of the hash function’s collision probability given the expected file set size.
+
+Absent these data points, the cache’s practical value remains speculative, and the existing test suite cannot guarantee that the new behavior is both correct and beneficial.
+
+== OPPONENT ==
+The artifact’s central claim is: **“Hit rate is unmeasured; the change only adds the key, so correctness is covered by existing tests and speed is not claimed.”**  
+
+The strongest objection is that the lack of any hit‑rate measurement makes the cache’s actual usefulness unknowable, and the assumption that merely “adding the key” preserves correctness is unwarranted. Existing tests may verify that a lookup returns a result, but they do not prove that the key‑generation (file hash) is collision‑free or that the cache is populated consistently across all code paths. Without measuring how often the cache is hit, it is impossible to determine whether the added key yields any performance benefit at all, nor to assess whether the overhead of computing and storing the hash outweighs any occasional hits. Moreover, correctness cannot be inferred solely from existing tests unless those tests explicitly cover scenarios involving hash mismatches, stale entries, or race conditions; the artifact provides no evidence that such cases are exercised. In short, the claim sidesteps essential validation of both functional reliability and practical impact, leaving the cache’s real behavior unverified.
+
+== JUDGE ==
+**(1) Claims both sides state**  
+- “Hit rate is unmeasured.”  
+- “Correctness is covered by existing tests.”  
+- “Speed is not claimed.”  
+- Consequently, the cache’s practical usefulness is unknown.
+
+**(2) Claims in dispute**  
+- The artifact’s assertion that “correctness is covered by existing tests” is contested: both sides argue that existing tests do **not** guarantee correctness of the new caching layer (collisions, stale entries, concurrency).  
+- The statement that “speed is not claimed” is challenged as insufficient; both argue that without measurement the performance impact cannot be accepted.
+
+**(3) Assumptions neither side stated**  
+- The hash function is deterministic and stable across runs.  
+- Computing the file hash adds negligible overhead.  
+- The cache can hold all keys without eviction affecting correctness.  
+- Cached entries survive process restarts or are correctly rebuilt.  
+- File content uniquely determines the hash (i.e., no intentional collisions).
+
+**(4) Assertions the artifact makes that neither side verified**  
+> “The cache stores results keyed by file hash. Hit rate is unmeasured; the change only adds the key, so correctness is covered by existing tests and speed is not claimed.”
+
+**Evidence needed to settle each dispute**  
+- **Hit‑rate measurement:** Run the system on representative workloads, record the fraction of lookups served from the cache.  
+- **Performance impact:** Benchmark end‑to‑end latency and throughput with the cache enabled vs. disabled across low‑, medium‑, and high‑hit scenarios.  
+- **Functional correctness:** Add targeted tests exercising hash collisions, stale‑entry eviction, and concurrent modifications; verify that results match the non‑cached behavior.  
+- **Correctness of “adding the key” claim:** Use mutation testing or differential testing to ensure that inserting the hash‑key step does not alter observable outputs for any input file.

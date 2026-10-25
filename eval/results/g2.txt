@@ -1,0 +1,48 @@
+SIMULATED — model reaction, not a measured human response.
+
+== PROPONENT ==
+The artifact succinctly documents two aspects of its retry logic: a three‑attempt cap with exponential backoff, and a missing timeout implementation. While the presence of a dedicated test (test_retry_limit) shows that the cap is verified, the description leaves several concerns unaddressed:
+
+1. **Coverage Scope** – The test appears to confirm only that retries stop after three attempts. It does not guarantee that the backoff intervals are correctly calculated, nor that the backoff respects the exponential curve under varying load or network latency.
+
+2. **Configurability** – Hard‑coding a three‑attempt limit and a specific backoff algorithm reduces flexibility. Production systems often need to tune these parameters per service or environment; the artifact gives no indication that they are exposed for adjustment.
+
+3. **Error Handling** – By stating “Timeouts are not handled and are an open item,” the artifact admits a critical gap. Without timeout detection, a hung request could cause the backoff loop to stall indefinitely, defeating the purpose of limiting retries.
+
+4. **Observability** – No mention is made of logging, metrics, or alerts around retries or backoff delays. Without visibility, diagnosing repeated failures or performance regressions becomes difficult.
+
+5. **Idempotency Assumptions** – The artifact assumes that the operations being retried are safe to repeat up to three times. If the underlying request is not idempotent, the retry policy could cause unintended side effects.
+
+To strengthen the claim that the retry mechanism is robust, the artifact would need evidence of:
+- Tests verifying the exact backoff timings and their exponential growth.
+- Configurable parameters for retry count and backoff strategy.
+- Implementation (or at least a roadmap) for timeout detection and handling.
+- Monitoring hooks that expose retry counts, latency, and failure rates.
+
+== OPPONENT ==
+The artifact’s core assertion—“**Retries are capped at three attempts with exponential backoff**”—is problematic because a fixed retry limit cannot accommodate the wide variety of failure modes that real‑world services exhibit. Some transient errors (e.g., brief network partitions or overloaded downstream services) may require more than three attempts to succeed, while others resolve instantly; imposing a hard ceiling forces a one‑size‑fits‑all policy that either wastes time on futile retries or aborts prematurely on recoverable faults. Moreover, the statement acknowledges an open item: “**Timeouts are not handled**.” Without timeout handling, the exponential backoff may continue to schedule retries even when the underlying operation is hanging indefinitely, leading to resource leakage and unbounded latency. The combination of a rigid retry cap and missing timeout logic means the system cannot guarantee both responsiveness and reliability, contradicting the implied claim that the retry mechanism is adequately protected by “test_retry_limit.” In short, the artifact’s confidence in a three‑attempt cap is unjustified given the absence of complementary timeout safeguards.
+
+== JUDGE ==
+**(1) Claims both sides state**  
+- The artifact states that “**Retries are capped at three attempts with exponential backoff**.”  
+- The artifact also states that “**Timeouts are not handled and are an open item**.”  
+- Both mention the existence of a test named **test_retry_limit** that covers the retry cap.
+
+**(2) Claims in dispute**  
+- **Adequacy of a three‑attempt fixed cap** – Proponent treats it as acceptable; opponent argues it is too rigid for varied failure modes. *Evidence needed:* field data showing success/failure rates vs. retry count across realistic workloads, or A/B testing with higher caps.  
+- **Impact of missing timeout handling** – Both see it as a gap, but opponent claims it invalidates the cap’s reliability. *Evidence needed:* measurements of hung operations, resource consumption, and latency when no timeout is enforced, compared to a version with timeout detection.  
+- **Correctness of exponential backoff timing** – Proponent notes the test does not verify timing; opponent does not address it, leaving the claim unsettled. *Evidence needed:* a test that records retry intervals and confirms they follow the intended exponential curve (e.g., 2^n backoff).
+
+**(3) Assumptions neither side stated**  
+- The retried operation is idempotent.  
+- The exponential backoff uses a specific base (e.g., 2) and jitter.  
+- The environment provides no external timeout mechanism.  
+- “test_retry_limit” checks only the count, not timing or side‑effects.  
+- Production systems will accept a hard‑coded limit without configurability.
+
+**(4) Artifact assertions not verified**  
+- “Retries are capped at three attempts with exponential backoff.”  
+- “The cap is covered by **test_retry_limit**.”  
+- “Timeouts are not handled and are an open item.”  
+
+These statements are presented as facts by the artifact but lack supporting receipts (e.g., test logs, code diff, exit codes).

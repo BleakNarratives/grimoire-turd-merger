@@ -1,0 +1,56 @@
+SIMULATED — model reaction, not a measured human response.
+
+== PROPONENT ==
+The artifact claims that “the parser handles UTF‑8 input” and backs this with the statement “I ran the 12 unit tests locally (exit 0).” A steel‑manned defense would require concrete, independent evidence that the parser reliably processes the full range of UTF‑8 data, not just that a small test suite passed on a single developer’s machine.
+
+**Evidence needed to substantiate the claim**
+
+1. **Comprehensive test coverage** – a publicly available test matrix that includes:
+   - All Unicode code points, especially edge cases (e.g., overlong sequences, surrogate code points, non‑characters, and the highest valid code point U+10FFFF).
+   - Real‑world strings from diverse languages, emojis, combining marks, and scripts with complex grapheme clusters.
+   - Extremely long inputs and streaming scenarios to expose buffer‑overflow or performance issues.
+2. **Robustness checks** – tests that feed malformed UTF‑8 (truncated sequences, illegal byte patterns) and verify graceful error handling rather than crashes or silent data loss.
+3. **Cross‑platform verification** – execution of the same test suite on multiple OSes, architectures, and with different compiler/runtime configurations to rule out environment‑specific quirks.
+4. **Independent validation** – third‑party audit or benchmark results confirming that the parser’s UTF‑8 handling matches the Unicode Standard’s specifications.
+5. **Documentation of limitations** – an explicit list of any known UTF‑8 edge cases that remain untested or unsupported.
+
+**Potential weaknesses in the artifact**
+
+- The “12 unit tests” are undefined; without seeing their content, they likely cover only a narrow slice of UTF‑8 functionality.
+- “Locally (exit 0)” does not prove correctness under varied inputs or in continuous‑integration pipelines.
+- Absence of any reference to compliance with the Unicode Standard or to fuzz testing leaves open the possibility of undiscovered bugs.
+- The roadmap note about UTF‑16 is relevant but does not affect the UTF‑8 claim; however, it hints at limited overall Unicode support.
+
+In summary, while the artifact’s claim is plausible, it remains unconvincing without publicly available, exhaustive testing and independent verification.
+
+== OPPONENT ==
+The artifact’s central claim is: **“The parser handles UTF‑8 input.”**  
+
+The strongest honest objection is that a passing run of twelve local unit tests does not substantiate a blanket statement about full UTF‑8 support. UTF‑8 encompasses a wide range of code points, multi‑byte sequences, and malformed inputs that a minimal test suite is unlikely to cover. Without evidence that the tests exercise edge cases (e.g., overlong encodings, surrogate code points, or characters beyond the Basic Multilingual Plane), the claim remains unverified.  
+
+In other words, the assertion is over‑general; “handles UTF‑8 input” suggests reliable processing of any valid UTF‑8 data, yet the only support offered is a local “exit 0” from a limited test set. Until comprehensive validation—such as fuzz testing, conformance suites, or real‑world examples—is presented, the claim cannot be accepted as proven.
+
+== JUDGE ==
+**(1) Claims both the proponent and opponent state**
+- The artifact asserts that *“the parser handles UTF‑8 input.”*  
+- Both sides agree that the artifact’s only supporting evidence is *“I ran the 12 unit tests locally (exit 0).”*  
+- Both agree that this evidence is insufficient to prove full UTF‑8 support.  
+
+**(2) Claims in dispute**  
+- **Whether the parser truly handles all valid UTF‑8 data.**  
+  *Evidence to settle:* An independent, publicly available conformance suite covering every Unicode code point (including edge cases such as overlong sequences, surrogate code points, non‑characters, U+10FFFF) run on the parser with a verifiable receipt (e.g., test log, diff, or exit code).  
+- **Whether the parser gracefully rejects malformed UTF‑8.**  
+  *Evidence to settle:* Fuzz testing results or explicit error‑handling tests that show the parser’s behavior on truncated or illegal byte patterns, accompanied by logs or crash reports.  
+
+**(3) Assumptions neither side stated**  
+- The 12 unit tests are representative of the full UTF‑8 space.  
+- An exit‑code 0 on a single developer’s machine guarantees correctness on all platforms and configurations.  
+- “Handles UTF‑8” is interpreted as correct processing of both valid and invalid sequences.  
+- The parser’s environment (locale, libraries) matches typical deployment settings.  
+
+**(4) Assertions the artifact makes that neither side verified**  
+- “The parser handles UTF‑8 input.”  
+- “I ran the 12 unit tests locally (exit 0).”  
+- “It does not yet handle UTF‑16 files; that is listed in ROADMAP.md as not done.”  
+
+These statements lack independent receipts (e.g., test logs, diff outputs, or documented test matrices) and therefore remain unverified.

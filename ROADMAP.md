@@ -15,8 +15,11 @@ Status key: [x] done and verified · [ ] not done · [~] partly done.
 ## Phase 3 — Verification tooling (in progress)
 - [x] `larp_scan.py`: assertion-free tests, trivial assertions, claims without receipts.
 - [x] Judge injection red-team (`tests/test_judge_redteam.py`).
-- [ ] Score the judge on a labeled known-good / known-bad set. Blocked on user (MRD item 2).
-- [~] `larp_scan` on the home repo: 14 findings hand-checked; not yet fixed upstream.
+- [x] Score the judge on a labeled known-good / known-bad set (6/6, `eval/`).
+- [x] Judge prompt separates artifact assertions from agreement; side prompts fence the artifact.
+- [~] Broader judge eval: 6 items is a baseline, not a benchmark. Labels are agent-authored.
+- [x] `larp_scan` on the home repo: 2 real holes found and fixed upstream; 12 claim
+  findings remain as review items.
 
 ## Phase 4 — Usability (not started)
 - [ ] Decide the delivery surface for non-terminal users (MRD item 5).

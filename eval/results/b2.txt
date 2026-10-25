@@ -1,0 +1,47 @@
+SIMULATED — model reaction, not a measured human response.
+
+== PROPONENT ==
+**Steel‑manned case for shipping**
+
+The strongest argument for the migration’s release rests on three pillars of verifiable evidence:
+
+1. **Comprehensive test suite** – A documented run showing that all 40 automated tests (unit, integration, and end‑to‑end) pass on the exact build that will be deployed, including timestamps, environment identifiers, and pass/fail logs. The suite should cover the full functional surface of the changed components and report code‑coverage metrics (ideally > 80 %).  
+
+2. **Production‑mirrored verification** – A reproducible verification process executed against a production‑like staging environment (identical data volume, configuration, and traffic patterns). Evidence would include before/after data‑integrity checks, performance benchmarks, and monitoring dashboards confirming no regressions in latency, error rates, or resource usage.  
+
+3. **Risk mitigation artifacts** – A rollback plan, stakeholder sign‑off, and a post‑deployment monitoring checklist. Logs of a successful dry‑run of the rollback, and a documented incident‑response window, demonstrate preparedness for unexpected issues.
+
+If these concrete artifacts exist and are auditable, the claim “All 40 tests pass and the migration is fully verified against production. Ship it.” is well‑supported.
+
+**Critical appraisal**
+
+The statement provides no direct evidence: no test logs, coverage reports, verification results, or risk‑mitigation documentation are presented. Without access to those artifacts, a reviewer cannot confirm that the tests exercise the relevant edge cases, that the production verification truly mirrors live traffic, or that rollback procedures have been exercised. Consequently, while the claim is plausible, its acceptance hinges on the provision of the specific, verifiable data outlined above. Until that evidence is reviewed, the migration should not be shipped.
+
+== OPPONENT ==
+The artifact’s central claim is:
+
+**“All 40 tests pass and the migration is fully verified against production. Ship it.”**
+
+The strongest honest objection is that passing a fixed suite of tests and a limited verification does not guarantee that a migration will be safe in a live environment. Test suites are inherently incomplete; they can miss edge cases, performance regressions, or interactions with unseen data patterns. Even a “full verification against production” can be constrained to a narrow set of scenarios or a staging copy that does not capture real‑time load, concurrency, or third‑party dependencies. Without evidence that the tests cover critical business logic, data integrity under scale, and rollback procedures, the statement that the migration is ready to ship is premature. Thus, the claim overstates confidence by equating test success with deployment readiness, ignoring the well‑known gap between test coverage and production reliability.
+
+== JUDGE ==
+**(1) Claims both sides state**  
+- The artifact asserts that *“All 40 tests pass and the migration is fully verified against production.”*  
+- Both parties note that **no supporting evidence (logs, reports, benchmarks, rollback proof) has been presented** to substantiate that claim.  
+
+**(2) Claims in dispute**  
+- **Sufficiency of test pass + verification for shipping** – Proponent treats the claim as sufficient *if* verifiable artifacts exist; Opponent argues it is inherently insufficient.  
+  *Evidence to settle:* Full test run logs, code‑coverage metrics, and a documented verification report (pre/post data integrity, performance, error‑rate dashboards) from a production‑mirrored environment.  
+- **Completeness of the test suite and verification scope** – Proponent implies the suite covers the functional surface; Opponent says it inevitably misses edge cases and real‑time load.  
+  *Evidence to settle:* A mapping of test cases to critical business requirements, plus stress‑test results and concurrency simulations matching live traffic patterns.  
+
+**(3) Assumptions neither side stated**  
+- The 40 tests include all critical business‑logic paths.  
+- The staging environment is an exact replica of production (data volume, configuration, third‑party services).  
+- A rollback plan, stakeholder sign‑off, and post‑deployment monitoring are already prepared and functional.  
+- No hidden side‑effects (e.g., schema changes, external API contracts) exist outside the tested components.  
+
+**(4) Assertions the artifact makes without receipt**  
+> “All 40 tests pass and the migration is fully verified against production. Ship it.”  
+
+No command output, log excerpt, hash, diff, or exit‑code is provided to verify this statement.

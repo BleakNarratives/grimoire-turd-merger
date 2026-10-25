@@ -13,3 +13,6 @@ Append-only log. Add new entries at the bottom; never rewrite earlier ones.
 | 2026-10-25 | 261c31d | Buffy | Fenced untrusted text in the debate judge prompt |
 | 2026-10-25 | e58bd52 | Buffy | Added code-level larp scanner and judge injection red-team |
 - 2026-10-25 — Scoring blocked on labels from user (MRD item 2).
+- 2026-10-25 — Judge scored 6/6 on eval/judge_labels.json. Judge prompt gained
+  a section for unverified artifact assertions; side prompts now fence the
+  artifact (an injection had been steering the proponent). eval/ added.
