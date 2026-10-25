@@ -324,7 +324,7 @@ def build_parser() -> argparse.ArgumentParser:
     l.add_argument("target", help="text/log file to review")
     l.add_argument("--image", help="optional screenshot (png, <4MB)")
     l.add_argument("--prompt", default="Audit this transcript: flag unverified claims and missing receipts.")
-    l.add_argument("--model", default="gemini-3.8-flash")
+    l.add_argument("--model", default="gemini-3.1-flash-lite")
     l.set_defaults(func=cmd_llm)
     return p
 
