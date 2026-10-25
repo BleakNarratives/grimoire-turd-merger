@@ -35,3 +35,7 @@ CLOSED
 - Judge prompt injection fence added (261c31d). Verified by tests and one
   live run; still needs the calibration in item 2 before it's trusted.
 - Code-level larp scanner added (e58bd52). Verified by tests and a scan.
+
+UPDATE 2026-10-25 — judge scoring blocked: no labeled artifacts exist in the repo.
+Agent-chosen known-bad examples would grade the judge on its own homework,
+so the labels must come from Bleak. See item 2 above.

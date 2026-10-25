@@ -12,3 +12,4 @@ Append-only log. Add new entries at the bottom; never rewrite earlier ones.
 | 2026-10-25 | b64bdae | Buffy | Added parallel proponent/opponent debate mode with neutral judge |
 | 2026-10-25 | 261c31d | Buffy | Fenced untrusted text in the debate judge prompt |
 | 2026-10-25 | e58bd52 | Buffy | Added code-level larp scanner and judge injection red-team |
+- 2026-10-25 — Scoring blocked on labels from user (MRD item 2).
