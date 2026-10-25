@@ -168,6 +168,82 @@ class TuiHelperTests(unittest.TestCase):
         _, attr = t.bus_row({"status": "SKIP", "file": "/x/a"})
         self.assertEqual(attr, t.C_DIM)
 
+    def test_summarize_bus(self):
+        import grimoire_tui as t
+        rows = [
+            {"status": "OK"},
+            {"status": "WARN"},
+            {"status": "FLAG"},
+            {"status": "OK"},
+            {"status": "UNKNOWN"},
+        ]
+        s = t.summarize_bus(rows)
+        self.assertEqual(s["OK"], 2)
+        self.assertEqual(s["WARN"], 1)
+        self.assertEqual(s["FLAG"], 1)
+        self.assertEqual(s["SKIP"], 1)
+        self.assertEqual(s["total"], 5)
+
+    def test_summarize_roadmap(self):
+        import grimoire_tui as t
+        items = [
+            {"done": 3, "total": 3},
+            {"done": 1, "total": 4},
+        ]
+        s = t.summarize_roadmap(items)
+        self.assertEqual(s["roadmaps"], 2)
+        self.assertEqual(s["done"], 4)
+        self.assertEqual(s["total"], 7)
+        self.assertEqual(s["completed_roadmaps"], 1)
+
+    def test_format_status_line(self):
+        import grimoire_tui as t
+        rows = [{"status": "OK"}, {"status": "FLAG"}]
+        st_bus = t.format_status_line("BUS", rows, 0)
+        self.assertIn("BUS: 2 entries", st_bus)
+        self.assertIn("1 OK", st_bus)
+        self.assertIn("1 FLAG", st_bus)
+        self.assertIn("#1/2", st_bus)
+
+        empty_bus = t.format_status_line("BUS", [], 0)
+        self.assertEqual(empty_bus, "BUS: 0 entries")
+
+        maps = [{"done": 2, "total": 4}]
+        st_rm = t.format_status_line("ROADMAP", maps, 0)
+        self.assertIn("ROADMAP: 1 maps", st_rm)
+        self.assertIn("2/4 tasks · 50%", st_rm)
+
+        st_about = t.format_status_line("ABOUT", [], 0)
+        self.assertIn("ABOUT", st_about)
+
+    def test_format_empty_state(self):
+        import grimoire_tui as t
+        lines_bus = t.format_empty_state("BUS")
+        self.assertTrue(any("Empty Bus" in line for line in lines_bus))
+        lines_rm = t.format_empty_state("ROADMAP")
+        self.assertTrue(any("No Roadmaps Found" in line for line in lines_rm))
+
+    def test_format_keyhints(self):
+        import grimoire_tui as t
+        self.assertIn("j/k move", t.format_keyhints(80))
+        self.assertIn("j/k:move", t.format_keyhints(40))
+        self.assertEqual(t.format_keyhints(20), " j/k Tab r q ")
+
+    def test_compute_layout_normal_and_small(self):
+        import grimoire_tui as t
+        norm = t.compute_layout(24, 80)
+        self.assertEqual(norm["header_y"], 0)
+        self.assertEqual(norm["status_y"], 1)
+        self.assertEqual(norm["detail_h"], 3)
+        self.assertEqual(norm["footer_y"], 23)
+        self.assertGreater(norm["list_h"], 0)
+
+        small = t.compute_layout(5, 40)
+        self.assertEqual(small["header_y"], 0)
+        self.assertEqual(small["status_y"], -1)
+        self.assertEqual(small["detail_h"], 0)
+        self.assertEqual(small["footer_y"], 4)
+
 
 if __name__ == "__main__":
     unittest.main()

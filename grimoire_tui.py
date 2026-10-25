@@ -23,6 +23,111 @@ VIEWS = ("BUS", "ROADMAP", "ABOUT")
 C_TITLE, C_OK, C_WARN, C_FLAG, C_DIM, C_ACCENT, C_SEL = 1, 2, 3, 4, 5, 6, 7
 
 
+def summarize_bus(rows: list[dict]) -> dict[str, int]:
+    counts = {"OK": 0, "WARN": 0, "FLAG": 0, "SKIP": 0, "total": len(rows)}
+    for r in rows:
+        st = r.get("status", "SKIP")
+        if st in counts:
+            counts[st] += 1
+        else:
+            counts["SKIP"] += 1
+    return counts
+
+
+def summarize_roadmap(items: list[dict]) -> dict[str, int]:
+    done = sum(it.get("done", 0) for it in items)
+    total = sum(it.get("total", 0) for it in items)
+    completed = sum(1 for it in items if it.get("total") and it.get("done") == it["total"])
+    return {
+        "roadmaps": len(items),
+        "done": done,
+        "total": total,
+        "completed_roadmaps": completed,
+    }
+
+
+def format_status_line(view_name: str, data_list: list[dict], sel: int) -> str:
+    n = len(data_list)
+    sel_str = f"#{sel + 1}/{n}" if n > 0 else "#0/0"
+    if view_name == "BUS":
+        s = summarize_bus(data_list)
+        if n == 0:
+            return "BUS: 0 entries"
+        return f"BUS: {n} entries ({s['OK']} OK, {s['WARN']} WARN, {s['FLAG']} FLAG) · {sel_str}"
+    elif view_name == "ROADMAP":
+        s = summarize_roadmap(data_list)
+        if n == 0:
+            return "ROADMAP: 0 maps"
+        pct = f"{int(s['done'] / s['total'] * 100)}%" if s["total"] > 0 else "0%"
+        return f"ROADMAP: {n} maps ({s['done']}/{s['total']} tasks · {pct}) · {sel_str}"
+    else:
+        return "ABOUT: Turd Merger read-only console"
+
+
+def format_empty_state(view_name: str) -> list[str]:
+    if view_name == "BUS":
+        return [
+            "── Empty Bus ──",
+            "No .bus or .json files found in ~/.grimoire/bus",
+            "Run 'grimoire_safety bus' or scan directory to populate.",
+            "Press 'r' to reload after adding entries.",
+        ]
+    elif view_name == "ROADMAP":
+        return [
+            "── No Roadmaps Found ──",
+            "No ROADMAP*.md files found under repository root.",
+            "Create a ROADMAP.md or check repository path.",
+            "Press 'r' to reload after adding roadmaps.",
+        ]
+    return []
+
+
+def format_keyhints(width: int) -> str:
+    if width >= 50:
+        return " j/k move · Tab view · r reload · q quit "
+    elif width >= 30:
+        return " j/k:move Tab:view r:reload q:quit "
+    else:
+        return " j/k Tab r q "
+
+
+def compute_layout(height: int, width: int) -> dict:
+    header_y = 0 if height >= 1 else -1
+    status_y = 1 if height >= 6 else -1
+    footer_y = height - 1 if height >= 3 else -1
+    msg_y = height - 2 if height >= 7 else -1
+
+    if height >= 12:
+        detail_h = 3
+    elif height >= 10:
+        detail_h = 2
+    elif height >= 8:
+        detail_h = 1
+    else:
+        detail_h = 0
+
+    if detail_h > 0 and footer_y != -1:
+        detail_y = footer_y - (1 if msg_y != -1 else 0) - detail_h
+    else:
+        detail_y = -1
+
+    list_y = 2 if status_y != -1 else (1 if header_y != -1 else 0)
+
+    bottom_limit = detail_y if detail_h > 0 else (msg_y if msg_y != -1 else (footer_y if footer_y != -1 else height))
+    list_h = max(0, bottom_limit - list_y)
+
+    return {
+        "header_y": header_y,
+        "status_y": status_y,
+        "list_y": list_y,
+        "list_h": list_h,
+        "detail_y": detail_y,
+        "detail_h": detail_h,
+        "msg_y": msg_y,
+        "footer_y": footer_y,
+    }
+
+
 def load_bus() -> list[dict]:
     if not BUS_DIR.is_dir():
         return []
@@ -56,25 +161,48 @@ def safe_add(win, y: int, x: int, text: str, attr: int = 0) -> None:
         pass
 
 
-def draw_header(win, view_idx: int) -> None:
+def draw_header(win, view_idx: int, layout: dict) -> None:
     h, w = win.getmaxyx()
-    title = " GRIMOIRE · TURD MERGER "
-    safe_add(win, 0, 0, "─" * w, curses.color_pair(C_DIM))
-    safe_add(win, 0, 2, title, curses.color_pair(C_TITLE) | curses.A_BOLD)
-    x = 2 + len(title) + 2
+    hy = layout["header_y"]
+    if hy < 0 or hy >= h:
+        return
+    safe_add(win, hy, 0, "─" * w, curses.color_pair(C_DIM))
+    if w >= 35:
+        title = " GRIMOIRE "
+        safe_add(win, hy, 2, title, curses.color_pair(C_TITLE) | curses.A_BOLD)
+        x = 2 + len(title) + 1
+    elif w >= 20:
+        title = " G "
+        safe_add(win, hy, 1, title, curses.color_pair(C_TITLE) | curses.A_BOLD)
+        x = 1 + len(title) + 1
+    else:
+        x = 1
+
     for i, v in enumerate(VIEWS):
-        label = f" {v} "
+        label = f" {v} " if w >= 30 else f"{v[:1]}"
         attr = curses.color_pair(C_SEL) | curses.A_BOLD if i == view_idx else curses.color_pair(C_DIM)
-        safe_add(win, 0, x, label, attr)
+        safe_add(win, hy, x, label, attr)
         x += len(label) + 1
 
 
-def draw_footer(win, msg: str) -> None:
+def draw_status_bar(win, view_name: str, data_list: list[dict], sel: int, layout: dict) -> None:
+    sy = layout["status_y"]
     h, w = win.getmaxyx()
-    keys = " j/k move · Tab view · r reload · q quit "
-    safe_add(win, h - 1, 0, keys.ljust(w - 1)[: w - 1], curses.color_pair(C_SEL))
-    if msg:
-        safe_add(win, h - 2, 2, msg, curses.color_pair(C_ACCENT))
+    if sy < 0 or sy >= h:
+        return
+    st = format_status_line(view_name, data_list, sel)
+    safe_add(win, sy, 2, st, curses.color_pair(C_ACCENT))
+
+
+def draw_footer(win, msg: str, layout: dict) -> None:
+    h, w = win.getmaxyx()
+    fy = layout["footer_y"]
+    my = layout["msg_y"]
+    if fy >= 0 and fy < h:
+        keys = format_keyhints(w)
+        safe_add(win, fy, 0, keys.ljust(w - 1)[: w - 1], curses.color_pair(C_SEL))
+    if msg and my >= 0 and my < h:
+        safe_add(win, my, 2, msg, curses.color_pair(C_ACCENT))
 
 
 def bus_row(r: dict) -> tuple[str, int]:
@@ -85,12 +213,25 @@ def bus_row(r: dict) -> tuple[str, int]:
     return f"{status:<5} {str(score):>5}  {name}", attr
 
 
-def draw_bus(win, rows: list[dict], sel: int, top: int) -> None:
+def draw_empty_state(win, view_name: str, layout: dict) -> None:
+    lines = format_empty_state(view_name)
+    ly = layout["list_y"]
+    lh = layout["list_h"]
+    h, w = win.getmaxyx()
+    for i, line in enumerate(lines):
+        if ly + i >= h or i >= lh:
+            break
+        attr = curses.color_pair(C_TITLE) | curses.A_BOLD if i == 0 else curses.color_pair(C_DIM)
+        safe_add(win, ly + i, 2, line, attr)
+
+
+def draw_bus(win, rows: list[dict], sel: int, top: int, layout: dict) -> None:
     h, w = win.getmaxyx()
     if not rows:
-        safe_add(win, 3, 4, "bus empty — nothing to grade yet.", curses.color_pair(C_DIM))
+        draw_empty_state(win, "BUS", layout)
         return
-    list_h = h - 6
+    list_y = layout["list_y"]
+    list_h = layout["list_h"]
     for i in range(list_h):
         idx = top + i
         if idx >= len(rows):
@@ -98,26 +239,31 @@ def draw_bus(win, rows: list[dict], sel: int, top: int) -> None:
         text, attr = bus_row(rows[idx])
         line = f"  {text}"
         if idx == sel:
-            safe_add(win, 2 + i, 0, line.ljust(w - 1), curses.color_pair(C_SEL) | curses.A_BOLD)
+            safe_add(win, list_y + i, 0, line.ljust(w - 1), curses.color_pair(C_SEL) | curses.A_BOLD)
         else:
-            safe_add(win, 2 + i, 0, line, curses.color_pair(attr))
+            safe_add(win, list_y + i, 0, line, curses.color_pair(attr))
+
     # detail pane
-    if 0 <= sel < len(rows):
+    det_y = layout["detail_y"]
+    det_h = layout["detail_h"]
+    if 0 <= sel < len(rows) and det_y >= 0 and det_h > 0:
         r = rows[sel]
-        y = h - 4
-        safe_add(win, y, 2, f"receipt: {'yes' if r.get('receipt') else 'no'}   sha256: {r.get('sha256', '-')}",
+        safe_add(win, det_y, 2, f"receipt: {'yes' if r.get('receipt') else 'no'}   sha256: {r.get('sha256', '-')}",
                  curses.color_pair(C_DIM))
-        for j, f in enumerate(r.get("findings", [])[:2]):
-            safe_add(win, y + 1 + j, 2, f"{f['source']}:{f['pattern']} x{f['hits']}",
+        findings = r.get("findings", [])
+        for j in range(min(det_h - 1, len(findings))):
+            f = findings[j]
+            safe_add(win, det_y + 1 + j, 2, f"{f['source']}:{f['pattern']} x{f['hits']}",
                      curses.color_pair(C_WARN))
 
 
-def draw_roadmap(win, items: list[dict], sel: int, top: int) -> None:
+def draw_roadmap(win, items: list[dict], sel: int, top: int, layout: dict) -> None:
     h, w = win.getmaxyx()
     if not items:
-        safe_add(win, 3, 4, "no roadmaps found under this root.", curses.color_pair(C_DIM))
+        draw_empty_state(win, "ROADMAP", layout)
         return
-    list_h = h - 6
+    list_y = layout["list_y"]
+    list_h = layout["list_h"]
     for i in range(list_h):
         idx = top + i
         if idx >= len(items):
@@ -127,27 +273,36 @@ def draw_roadmap(win, items: list[dict], sel: int, top: int) -> None:
         line = f"  {pct:>7}  {it.get('path', '?')}"
         attr = curses.color_pair(C_OK) if it.get("total") and it["done"] == it["total"] else curses.color_pair(C_DIM)
         if idx == sel:
-            safe_add(win, 2 + i, 0, line.ljust(w - 1), curses.color_pair(C_SEL) | curses.A_BOLD)
+            safe_add(win, list_y + i, 0, line.ljust(w - 1), curses.color_pair(C_SEL) | curses.A_BOLD)
         else:
-            safe_add(win, 2 + i, 0, line, attr)
-    if 0 <= sel < len(items):
+            safe_add(win, list_y + i, 0, line, attr)
+
+    det_y = layout["detail_y"]
+    det_h = layout["detail_h"]
+    if 0 <= sel < len(items) and det_y >= 0 and det_h > 0:
         it = items[sel]
-        y = h - 4
-        safe_add(win, y, 2, it.get("title", ""), curses.color_pair(C_ACCENT))
-        for j, s in enumerate(it.get("signals", [])[:2]):
-            safe_add(win, y + 1 + j, 2, s, curses.color_pair(C_DIM))
+        safe_add(win, det_y, 2, it.get("title", ""), curses.color_pair(C_ACCENT))
+        signals = it.get("signals", [])
+        for j in range(min(det_h - 1, len(signals))):
+            s = signals[j]
+            safe_add(win, det_y + 1 + j, 2, s, curses.color_pair(C_DIM))
 
 
-def draw_about(win) -> None:
+def draw_about(win, layout: dict) -> None:
     lines = [
         ("GRIMOIRE · Turd Merger", curses.color_pair(C_TITLE) | curses.A_BOLD),
         ("", 0),
-        ("Read-only. Stdlib only. No network unless you run  grimoire_safety llm.", curses.color_pair(C_DIM)),
+        ("Read-only. Stdlib only. No network unless you run grimoire_safety llm.", curses.color_pair(C_DIM)),
         ("Verdicts: OK / WARN / FLAG  ·  SHIP / HOLD / KILL", curses.color_pair(C_ACCENT)),
         ("Rule: claim without receipt is a flag, not proof.", curses.color_pair(C_WARN)),
     ]
+    list_y = layout["list_y"]
+    list_h = layout["list_h"]
+    h, w = win.getmaxyx()
     for i, (t, a) in enumerate(lines):
-        safe_add(win, 3 + i, 4, t, a)
+        if list_y + i >= h or i >= list_h:
+            break
+        safe_add(win, list_y + i, 2, t, a)
 
 
 def main_loop(stdscr) -> None:
@@ -161,16 +316,22 @@ def main_loop(stdscr) -> None:
     msg = ""
     while True:
         stdscr.erase()
-        draw_header(stdscr, view)
+        h, w = stdscr.getmaxyx()
+        layout = compute_layout(h, w)
+        draw_header(stdscr, view, layout)
         name = VIEWS[view]
-        if name == "BUS":
-            rows = data["BUS"]
-            draw_bus(stdscr, rows, sel["BUS"], top["BUS"])
-        elif name == "ROADMAP":
-            draw_roadmap(stdscr, data["ROADMAP"], sel["ROADMAP"], top["ROADMAP"])
+        if name in ("BUS", "ROADMAP"):
+            draw_status_bar(stdscr, name, data[name], sel[name], layout)
         else:
-            draw_about(stdscr)
-        draw_footer(stdscr, msg)
+            draw_status_bar(stdscr, name, [], 0, layout)
+
+        if name == "BUS":
+            draw_bus(stdscr, data["BUS"], sel["BUS"], top["BUS"], layout)
+        elif name == "ROADMAP":
+            draw_roadmap(stdscr, data["ROADMAP"], sel["ROADMAP"], top["ROADMAP"], layout)
+        else:
+            draw_about(stdscr, layout)
+        draw_footer(stdscr, msg, layout)
         stdscr.refresh()
         msg = ""
         key = stdscr.getch()
@@ -188,7 +349,7 @@ def main_loop(stdscr) -> None:
         elif name in sel and key in (ord("k"), curses.KEY_UP):
             sel[name] = max(sel[name] - 1, 0)
         if name in sel:
-            page = max(stdscr.getmaxyx()[0] - 6, 1)
+            page = max(layout["list_h"], 1)
             if sel[name] < top[name]:
                 top[name] = sel[name]
             elif sel[name] >= top[name] + page:
