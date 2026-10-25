@@ -38,6 +38,63 @@ PERSPECTIVES = {
 LABEL = "SIMULATED — model reaction, not a measured human response."
 
 
+DEBATE_PERSPECTIVES = {
+    "proponent": (
+        "You argue FOR the artifact's central claim. Steelman it: state the strongest "
+        "honest case, name the evidence it would need, and never invent support."
+    ),
+    "opponent": (
+        "You argue AGAINST the artifact's central claim. Find the strongest honest "
+        "objection, quote the exact claim you attack, and never invent counter-evidence."
+    ),
+}
+
+JUDGE_PROMPT = (
+    "You are a neutral judge. You receive a proponent and an opponent argument about "
+    "the same artifact. Separate: (1) claims both sides agree on, (2) claims in dispute, "
+    "(3) assumptions neither side stated. For each dispute, say what evidence would "
+    "settle it. Do not declare a winner without evidence."
+)
+
+
+def build_debate_prompt(side: str, artifact: str, audience: str) -> str:
+    """Prompt for one debate side. Pure; no I/O."""
+    parts = [DEBATE_PERSPECTIVES[side], ""]
+    if audience:
+        parts += [f"Audience / region: {audience}", ""]
+    parts += ["ARTIFACT:", artifact.strip(), "",
+              "Keep the answer under 250 words. Plain text, no preamble."]
+    return "\n".join(parts)
+
+
+def build_judge_prompt(artifact: str, pro: str, con: str) -> str:
+    """Prompt for the neutral judge over both sides. Pure; no I/O."""
+    return "\n".join([JUDGE_PROMPT, "", "ARTIFACT:", artifact.strip(), "",
+                      "PROPONENT:", pro.strip(), "", "OPPONENT:", con.strip(), "",
+                      "Keep the answer under 300 words. Plain text, no preamble."])
+
+
+def run_debate(artifact: str, audience: str, ask) -> dict[str, str]:
+    """Proponent and opponent run in parallel; the judge reads both. `ask(prompt) -> str`."""
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        fut_pro = pool.submit(ask, build_debate_prompt("proponent", artifact, audience))
+        fut_con = pool.submit(ask, build_debate_prompt("opponent", artifact, audience))
+        pro, con = fut_pro.result(), fut_con.result()
+    judge = ask(build_judge_prompt(artifact, pro, con))
+    return {"proponent": pro, "opponent": con, "judge": judge}
+
+
+def render_debate(results: dict[str, str], audience: str) -> str:
+    """Format a debate report with the simulated label on every section."""
+    lines = [LABEL, ""]
+    if audience:
+        lines += [f"Audience / region: {audience}", ""]
+    for name in ("proponent", "opponent", "judge"):
+        lines += [f"== {name.upper()} ==", results.get(name, "(no output)").strip(), ""]
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def build_prompt(name: str, artifact: str, audience: str, prior: dict[str, str]) -> str:
     """Compose the prompt for one perspective. Pure; no I/O."""
     parts = [PERSPECTIVES[name], ""]
@@ -77,6 +134,8 @@ def main(argv=None) -> int:
     ap.add_argument("--audience", default="", help="demographic or region note")
     ap.add_argument("--dry-run", action="store_true", help="print prompts; no model call")
     ap.add_argument("--provider", choices=["gemini", "groq"], default="gemini")
+    ap.add_argument("--mode", choices=["panel", "debate"], default="panel",
+                    help="panel: three perspectives; debate: proponent vs opponent, parallel, judged")
     ap.add_argument("--model", default="", help="override the provider's default model")
     a = ap.parse_args(argv)
     p = Path(a.artifact).expanduser()
@@ -101,11 +160,13 @@ def main(argv=None) -> int:
         return gs.gemini_text(prompt, a.model or "gemini-3.1-flash-lite")
 
     try:
-        results = run_panel(text, a.audience, ask)
+        if a.mode == "debate":
+            print(render_debate(run_debate(text, a.audience, ask), a.audience), end="")
+        else:
+            print(render_report(run_panel(text, a.audience, ask), a.audience), end="")
     except RuntimeError as e:
         print(f"simulate_panel: {e}", file=sys.stderr)
         return 2
-    print(render_report(results, a.audience), end="")
     return 0
 
 
