@@ -286,6 +286,10 @@ def cmd_llm(args) -> int:
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             data = json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        # Status code only. Never echo the request, headers, or key.
+        print(f"llm: HTTP {e.code} from model endpoint ({args.model})", file=sys.stderr)
+        return 2
     except (urllib.error.URLError, OSError, ValueError) as e:
         print(f"llm: request failed: {type(e).__name__}", file=sys.stderr)
         return 2
@@ -320,7 +324,7 @@ def build_parser() -> argparse.ArgumentParser:
     l.add_argument("target", help="text/log file to review")
     l.add_argument("--image", help="optional screenshot (png, <4MB)")
     l.add_argument("--prompt", default="Audit this transcript: flag unverified claims and missing receipts.")
-    l.add_argument("--model", default="gemini-2.0-flash")
+    l.add_argument("--model", default="gemini-3.8-flash")
     l.set_defaults(func=cmd_llm)
     return p
 
